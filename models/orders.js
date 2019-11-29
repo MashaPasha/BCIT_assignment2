@@ -16,5 +16,6 @@ var orderSchema = new mongoose.Schema({
     totalPrice: Number
 });
 
+orderSchema.index({ name: 'text', address: 'text', phone: 'text' });
 
 module.exports = mongoose.model('Order', orderSchema);

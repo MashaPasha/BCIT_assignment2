@@ -4,69 +4,64 @@ const Order = require('../models/orders');
 const PriceCalculator = require('./PriceCalculator');
 const calc = new PriceCalculator();
 const pizzaDescription = require('../data/pizzaDescription');
+const { check, validationResult } = require('express-validator');
 
 router.get('/', function (req, res, next) {
-    Order.find({}, function (err, orders) {
+    let mongoQuery = {};
+    if(req.query.search) {
+        mongoQuery = {
+            "$or": [
+                { name: { '$regex': req.query.search, '$options': 'i' } },
+                { address: { '$regex': req.query.search, '$options': 'i' } },
+                { phone: { '$regex': req.query.search, '$options': 'i' } }
+            ]
+        }
+    }
+
+    Order.find(mongoQuery, function (err, orders) {
         if(err) {
-            next(err);
-            return;
+            return next(err);
         }
 
         res.json(orders);
     }).limit(100);
 });
 
-// router.post('/', function (req, res, next) {
-//     console.log(req.body);
-//     if(req.body.phoneNumber  && req.body.address) {
-//         Orders.find({$and:[{address: req.body.address},{phoneNumber:req.body.phoneNumber}]}, function (err, orders) {
-//             console.log(orders);
-//             res.json(orders);
-//         }).limit(100);
-//     }
-//     // Added an ability for incomplete search. But probably it is a bit overcomplicated
-//     else if(req.body.phoneNumber  && !req.body.address) {
-//         Orders.find({$or:[{phoneNumber:req.body.phoneNumber}, {"phoneNumber":{$regex: req.body.phoneNumber , $options: 'i'}}]}, function (err, orders) {
-//             console.log(orders);
-//             res.json(orders);
-//         }).limit(100);
-//     }
-//     // Added an ability for incomplete search. But probably it is a bit overcomplicated
-//     else if(!req.body.phoneNumber  && req.body.address) {
-//         Orders.find({$or:[{address:req.body.address}, {"address":{$regex: req.body.address , $options: 'i'}}]}, function (err, orders) {
-//             console.log(orders);
-//             res.json(orders);
-//         }).limit(100);
-//     }
-//     else{
-//         res.status(500).json({ status: "Failed to search the order." });
-//         return;
-//     }
-// });
+router.post('/', [
+        check("crust").exists().withMessage("crust is missing"),
+        check("size").exists().withMessage("size is mising"),
+        check("toppings").exists().withMessage("toppings is mising"),
+        check("name").exists().withMessage("name is missing"),
+        check("address").exists().withMessage("address is mising"),
+        check("phone").exists().withMessage("phone is mising")
+    ],
+    function (req, res, next) {
 
-router.post('/', function (req, res, next) {
-
-    const calculatedOrder = calc.calculatePrice({
-        crust: pizzaDescription.crust.find(e => e.id === req.body.crust.id),
-        size: pizzaDescription.size.find(e => e.id === req.body.size.id),
-        toppings: req.body.topping.map(e => pizzaDescription.toppings.find(t => t.id === e.id)),
-        quantity: req.body.quantity,
-        name: req.body.name,
-        address: req.body.address,
-        phone: req.body.phone
-    });
-
-    const order = new Order(calculatedOrder);
-
-
-    order.save((err, savedOrder) => {
-        if (err) {
-            next(err)
-            return;
+        const validationErrors = validationResult(req);
+        if(!validationErrors.isEmpty()) {
+            return res.status(422).json({ errors: validationErrors.array() });
         }
 
-        res.json(savedOrder);
-    });
+        const calculatedOrder = calc.calculatePrice({
+            crust: pizzaDescription.crust.find(e => e.id === req.body.crust.id),
+            size: pizzaDescription.size.find(e => e.id === req.body.size.id),
+            toppings: req.body.toppings.map(e => pizzaDescription.toppings.find(t => t.id === e.id)),
+            quantity: req.body.quantity,
+            name: req.body.name,
+            address: req.body.address,
+            phone: req.body.phone
+        });
+
+        const order = new Order(calculatedOrder);
+
+
+        order.save((err, savedOrder) => {
+            if (err) {
+                return next(err)
+            }
+
+            res.json(savedOrder);
+        });
 });
 
 module.exports = router;
