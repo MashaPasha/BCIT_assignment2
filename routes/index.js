@@ -1,13 +1,11 @@
-let express = require('express');
-let router = express.Router();
-let mongo = require('mongodb');
-let assert = require('assert');
+const express = require('express');
+const router = express.Router();
+const pizzaDescription = require('../data/pizzaDescription');
 
-let url = 'mongodb://localhost:27017/test';
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Pizza' });
+  res.render('index', pizzaDescription);
 });
 
 router.get('/get-data', function (req, res, next){

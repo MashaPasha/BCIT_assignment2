@@ -3,9 +3,11 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var mongoose = require('mongoose');
+
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var ordersRouter = require('./routes/orders');
 
 var app = express();
 
@@ -19,8 +21,21 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Adding mongoose DB
+
+// Adding connection string and open/close connection
+// let mongoUrl = 'mongodb://sinapsist:comp2912assign02@ds123454.mlab.com:23454/a00943311assign2';
+let mongoUrl = 'mongodb://localhost/pizza';
+
+mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true }, function (err) {
+    if (err) {
+        console.log("Error connecting to MongoDB", err);
+        process.exit(1);
+    }
+});
+
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/orders', ordersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
