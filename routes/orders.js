@@ -10,7 +10,7 @@ router.get('/', function (req, res, next) {
     let mongoQuery = {};
     if(req.query.search) {
         mongoQuery = {
-            "$or": [
+            '$or': [
                 { name: { '$regex': req.query.search, '$options': 'i' } },
                 { address: { '$regex': req.query.search, '$options': 'i' } },
                 { phone: { '$regex': req.query.search, '$options': 'i' } }

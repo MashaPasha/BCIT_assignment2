@@ -35,7 +35,7 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true }, 
 });
 
 app.use('/', indexRouter);
-app.use('/orders', ordersRouter);
+app.use('/api/orders', ordersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

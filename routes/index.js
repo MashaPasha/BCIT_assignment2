@@ -8,12 +8,8 @@ router.get('/', function(req, res, next) {
   res.render('index', pizzaDescription);
 });
 
-router.get('/get-data', function (req, res, next){
-
-});
-
-router.post('/insert', function (req, res, next) {
-
+router.get('/order', function(req, res, next) {
+  res.render('order', pizzaDescription);
 });
 
 module.exports = router;
