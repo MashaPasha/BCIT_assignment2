@@ -7,7 +7,7 @@ var mongoose = require('mongoose');
 
 
 var indexRouter = require('./routes/index');
-var ordersRouter = require('./routes/orders');
+var apiOrdersRouter = require('./routes/api-orders');
 
 var app = express();
 
@@ -24,8 +24,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Adding mongoose DB
 
 // Adding connection string and open/close connection
-// let mongoUrl = 'mongodb://sinapsist:comp2912assign02@ds123454.mlab.com:23454/a00943311assign2';
-let mongoUrl = 'mongodb://localhost/pizza';
+// let mongoUrl = 'mongodb://sinapsist:comp2912assign02@ds123454.mlab.com:23454/A01068510assign2';
+let mongoUrl = 'mongodb://localhost/A01068510';
 
 mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true }, function (err) {
     if (err) {
@@ -34,8 +34,10 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true }, 
     }
 });
 
+
+
 app.use('/', indexRouter);
-app.use('/api/orders', ordersRouter);
+app.use('/api/orders', apiOrdersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

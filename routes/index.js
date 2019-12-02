@@ -3,13 +3,16 @@ const router = express.Router();
 const pizzaDescription = require('../data/pizzaDescription');
 
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', pizzaDescription);
+router.get('/', (req, res) =>{  
+  res.redirect('add-order');
 });
 
-router.get('/order', function(req, res, next) {
-  res.render('order', pizzaDescription);
+router.get('/add-order', function(req, res, next) {
+  res.render('add-order', pizzaDescription);
+});
+
+router.get('/orders', function(req, res, next) {
+  res.render('orders', pizzaDescription);
 });
 
 module.exports = router;

@@ -33,7 +33,8 @@ router.post('/', [
         check("toppings").exists().withMessage("toppings is mising"),
         check("name").exists().withMessage("name is missing"),
         check("address").exists().withMessage("address is mising"),
-        check("phone").exists().withMessage("phone is mising")
+        check("phone").exists().withMessage("phone is mising"),
+        check("quantity").exists().withMessage("quantity is mising")
     ],
     function (req, res, next) {
 
